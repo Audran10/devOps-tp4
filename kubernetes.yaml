@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubernetes
+  namespace: tp
+  labels:
+    appName: kubernetes
+spec:
+  containers:
+  - name: kubernetes
+    image: registry.cluster.wik.cloud/public/echo
+    ports:
+    - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: kubernetes-2
+  namespace: tp
+  labels:
+    appName: kubernetes-2
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      appName: kubernetes-2
+  template:
+    metadata:
+      labels:
+        appName: kubernetes-2
+    spec:
+      containers:
+      - name: kubernetes-2
+        image: registry.cluster.wik.cloud/public/echo
+        ports:
+        - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-3
+  namespace: tp
+  labels:
+    appName: kubernetes-3
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      appName: kubernetes-3
+  template:
+    metadata:
+      labels:
+        appName: kubernetes-3
+    spec:
+      containers:
+      - name: kubernetes-3
+        image: registry.cluster.wik.cloud/public/echo
+        ports:
+        - containerPort: 8080
